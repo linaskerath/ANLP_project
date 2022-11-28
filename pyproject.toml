@@ -9,7 +9,11 @@ packages = [{include = "anlp_project"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 pandas = "^1.5.2"
+rdata = "^0.9"
 
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.17.1"
 
 [build-system]
 requires = ["poetry-core"]
