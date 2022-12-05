@@ -46,5 +46,5 @@ for l1 in languages:
         ls = spatial.distance.cosine(df[l1], df[l2])
         ls_dict[l1][l2] = ls
 
-df_ls = pd.DataFrame.from_dict(ls_dict)
+df_ls = pd.DataFrame.from_dict(ls_dict).applymap(lambda x: 1 - x)
 df_ls.to_csv("../data/outputs/linguistic_similarities.csv")
