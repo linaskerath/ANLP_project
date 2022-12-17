@@ -41,7 +41,7 @@ def custom_train_test_split(data, columns):
     test_lang = data['lang'].iloc[test_idx]
     return X_train, X_test, y_train, y_test, test_lang
 
-def get_cv_score(data, columns, model_type, model, cv = 5):
+def get_cv_score(data, columns, model, cv = 5):
     """
     Function to get cv score. 
     Arguments:
@@ -53,22 +53,15 @@ def get_cv_score(data, columns, model_type, model, cv = 5):
     Returns: train and test sets with labels.
     """
     train_subset = data[columns]
-    train_label_subset = data['lang_code']
+    train_label_subset = data[('labels', 'lang_code')]
 
     gss = GroupShuffleSplit(n_splits = cv, test_size = 0.4, random_state=42)
     cv_scores = []
 
-    if model_type == 'LogisticRegression':
-        for train_idx, test_idx in tqdm(gss.split(train_subset, train_label_subset, groups = data['subid'])): # wtf what are labels
-            model.fit(train_subset.iloc[train_idx], train_label_subset.iloc[train_idx])
-            score = model.score(train_subset.iloc[test_idx], train_label_subset.iloc[test_idx])
-            cv_scores.append(score)
-        print(np.mean(cv_scores))
-        return cv_scores
 
-    elif model_type == 'LSTM':
-        print('TBD. Must be implemented if logreg framwork does not work.')
-        return 
-
-    else:
-        print("Model type must be 'LogisticRegression' or 'LSTM'.")
+    for train_idx, test_idx in tqdm(gss.split(train_subset, train_label_subset, groups = data[('id','uniform_id')])):
+        model.fit(train_subset.iloc[train_idx], train_label_subset.iloc[train_idx])
+        score = model.score(train_subset.iloc[test_idx], train_label_subset.iloc[test_idx])
+        cv_scores.append(score)
+    print(np.mean(cv_scores))
+    return cv_scores
