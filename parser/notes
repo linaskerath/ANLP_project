@@ -1,0 +1,32 @@
+
+Settings: 
+Only trained on EWT, I couldnt use the (public) multi-dataset models as they do not have PTB pos tags.
+UD v2.11 with MaChAmp v0.4 with all default settings, dataset smoothing with alpha 0.5. I also included predictions for lemmas and morphological tagging as it is the default and it shouldn't harm performance much, furthermore they might be nice to have for future work.
+
+differences across models:
+
+Pre-processing:
+First tried with punctuation attached to words, this often led to wrong PUNCT labels (surprising to me, I was hoping it would be more robust). So, now we use the words without . and , as input and save the full word in the misc column (column 10)
+
+Non-standard tokenized:
+
+* it's -> tagged as it
+* world's -> tagged as world
+* anti-virus and anti-spyware are pre-separated, anti is amod and ADJ of virus and spyware
+(I would agree with all of these, I guess the last two could also be the goeswith relation)
+
+
+Analysis: Perormance is generally mBERT < XLM-r < mLUKE (https://robvanderg.github.io/blog/tune_lms.htm), so I first checked mBERT vs XLM-r and then XLM-r vs mLUKE. I focused on only the UPOS labels, as I am not so good at PTB labels
+
+mbert vs xlm-r: 
+pos: xlm-r is better in the different cases (quite few in total), except for Internet, which is a noun I guess
+dep: most differences both seem plausable to me. mBERT seems better in obl vs nmode, in most other cases I would prefer the XLM-r annotation.
+
+xlm-r vs mluke: 
+pos: mluke get Internet correct, but in most cases XLM-r is actually better (most=not a lot in total actually)
+dep: XLM-r is clearly better, there are only few cases where mLUKE is correct (and the amount of differences surprises me)
+
+
+
+This is definitely overkill, perhaps some of it can go into the appendix though
+
