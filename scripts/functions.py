@@ -41,7 +41,7 @@ def custom_train_test_split(data, columns):
     test_lang = data['lang'].iloc[test_idx]
     return X_train, X_test, y_train, y_test, test_lang
 
-def get_cv_score(data, columns, model, cv = 5):
+def get_cv_score(data, columns, model, cv = 10):
     """
     Function to get cv score. 
     Arguments:
