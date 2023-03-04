@@ -1,5 +1,6 @@
 import pandas as pd
-from sklearn.model_selection import GroupShuffleSplit
+#from sklearn.model_selection import GroupShuffleSplit
+from sklearn.model_selection import StratifiedKFold
 from tqdm import tqdm
 import numpy as np
 
@@ -18,28 +19,28 @@ def map_language(df):
     return language_lookup
 
 
-def custom_train_test_split(data, columns):
-    """
-    Function for train test split.
-    Arguments:
-        data: pandas dataset (with train columns, labels ('lang_code') and groups ('subid'))
-        columns: columns to train on.
-    Returns: train and test sets with labels.
-    """
-    train_subset = data[columns]
-    train_label_subset = data['lang_code']
-    gss = GroupShuffleSplit(n_splits=1, test_size = 0.4, random_state=42)
-    split_indexes = list(gss.split(train_subset, train_label_subset, data['subid']))[0]
-    train_idx = list(split_indexes[0])
-    test_idx = list(split_indexes[1])
+# def custom_train_test_split(data, columns):
+#     """
+#     Function for train test split.
+#     Arguments:
+#         data: pandas dataset (with train columns, labels ('lang_code') and groups ('subid'))
+#         columns: columns to train on.
+#     Returns: train and test sets with labels.
+#     """
+#     train_subset = data[columns]
+#     train_label_subset = data['lang_code']
+#     gss = GroupShuffleSplit(n_splits=1, test_size = 0.4, random_state=42)
+#     split_indexes = list(gss.split(train_subset, train_label_subset, data['subid']))[0]
+#     train_idx = list(split_indexes[0])
+#     test_idx = list(split_indexes[1])
 
-    X_train = train_subset.iloc[train_idx]
-    y_train = train_label_subset.iloc[train_idx]
-    X_test = train_subset.iloc[test_idx]
-    y_test = train_label_subset.iloc[test_idx]
+#     X_train = train_subset.iloc[train_idx]
+#     y_train = train_label_subset.iloc[train_idx]
+#     X_test = train_subset.iloc[test_idx]
+#     y_test = train_label_subset.iloc[test_idx]
 
-    test_lang = data['lang'].iloc[test_idx]
-    return X_train, X_test, y_train, y_test, test_lang
+#     test_lang = data['lang'].iloc[test_idx]
+#     return X_train, X_test, y_train, y_test, test_lang
 
 def get_cv_score(data, columns, model, cv = 10):
     """
@@ -55,7 +56,8 @@ def get_cv_score(data, columns, model, cv = 10):
     train_subset = data[columns]
     train_label_subset = data[('labels', 'lang_code')]
 
-    gss = GroupShuffleSplit(n_splits = cv, test_size = 0.4, random_state=42)
+    #gss = GroupShuffleSplit(n_splits = cv, test_size = 0.4, random_state=42)
+    gss = StratifiedKFold(n_splits = cv, shuffle=True, random_state=42)
     cv_scores = []
 
 
@@ -63,5 +65,5 @@ def get_cv_score(data, columns, model, cv = 10):
         model.fit(train_subset.iloc[train_idx], train_label_subset.iloc[train_idx])
         score = model.score(train_subset.iloc[test_idx], train_label_subset.iloc[test_idx])
         cv_scores.append(score)
-    print(np.mean(cv_scores))
+    #print(np.mean(cv_scores))
     return cv_scores
